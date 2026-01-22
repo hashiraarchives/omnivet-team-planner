@@ -16,7 +16,15 @@ const pool = new Pool({
 app.locals.pool = pool;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:8080',
+    'http://localhost:3000',
+    'http://127.0.0.1:8080',
+    'https://cheerful-perception-production.up.railway.app'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Serve static files from frontend folder in production
