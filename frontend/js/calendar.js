@@ -1,4 +1,4 @@
-// Calendar Manager
+// Calendar Manager - Futuristic Edition
 
 class Calendar {
   constructor() {
@@ -8,38 +8,83 @@ class Calendar {
     this.schedules = [];
     this.selectedDate = null;
 
+    console.log('Calendar initialized:', this.currentMonth + 1, this.currentYear);
     this.init();
   }
 
   init() {
-    // Navigation buttons
-    document.getElementById('prevMonth').addEventListener('click', () => this.changeMonth(-1));
-    document.getElementById('nextMonth').addEventListener('click', () => this.changeMonth(1));
+    try {
+      // Navigation buttons
+      const prevBtn = document.getElementById('prevMonth');
+      const nextBtn = document.getElementById('nextMonth');
+      const todayBtn = document.getElementById('todayBtn');
 
-    // Modal handlers
-    document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
-    document.getElementById('closeEditModal').addEventListener('click', () => this.closeEditModal());
+      if (prevBtn) prevBtn.addEventListener('click', () => this.changeMonth(-1));
+      if (nextBtn) nextBtn.addEventListener('click', () => this.changeMonth(1));
+      if (todayBtn) todayBtn.addEventListener('click', () => this.goToToday());
 
-    // Close modals on overlay click
-    document.getElementById('dayModal').addEventListener('click', (e) => {
-      if (e.target.id === 'dayModal') this.closeModal();
-    });
-    document.getElementById('editModal').addEventListener('click', (e) => {
-      if (e.target.id === 'editModal') this.closeEditModal();
-    });
+      // Modal handlers
+      const closeModal = document.getElementById('closeModal');
+      const closeEditModal = document.getElementById('closeEditModal');
+      const dayModal = document.getElementById('dayModal');
+      const editModal = document.getElementById('editModal');
 
-    // Schedule form submission
-    document.getElementById('scheduleForm').addEventListener('submit', (e) => this.handleScheduleSubmit(e));
+      if (closeModal) closeModal.addEventListener('click', () => this.closeModal());
+      if (closeEditModal) closeEditModal.addEventListener('click', () => this.closeEditModal());
 
-    // Edit form submission
-    document.getElementById('editScheduleForm').addEventListener('submit', (e) => this.handleEditSubmit(e));
-    document.getElementById('deleteScheduleBtn').addEventListener('click', () => this.handleDelete());
+      // Close modals on overlay click
+      if (dayModal) {
+        dayModal.addEventListener('click', (e) => {
+          if (e.target.id === 'dayModal') this.closeModal();
+        });
+      }
+      if (editModal) {
+        editModal.addEventListener('click', (e) => {
+          if (e.target.id === 'editModal') this.closeEditModal();
+        });
+      }
 
-    // Initial render
+      // Schedule form submission
+      const scheduleForm = document.getElementById('scheduleForm');
+      if (scheduleForm) {
+        scheduleForm.addEventListener('submit', (e) => this.handleScheduleSubmit(e));
+      }
+
+      // Edit form submission
+      const editForm = document.getElementById('editScheduleForm');
+      const deleteBtn = document.getElementById('deleteScheduleBtn');
+      if (editForm) {
+        editForm.addEventListener('submit', (e) => this.handleEditSubmit(e));
+      }
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => this.handleDelete());
+      }
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          this.closeModal();
+          this.closeEditModal();
+        }
+      });
+
+      // Initial render
+      this.render();
+
+    } catch (error) {
+      console.error('Calendar init error:', error);
+    }
+  }
+
+  goToToday() {
+    const today = new Date();
+    this.currentMonth = today.getMonth();
+    this.currentYear = today.getFullYear();
     this.render();
   }
 
   async render() {
+    console.log('Rendering calendar for:', this.currentMonth + 1, this.currentYear);
     this.updateHeader();
     await this.loadSchedules();
     this.renderDays();
@@ -50,14 +95,18 @@ class Calendar {
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'
     ];
-    document.getElementById('currentMonth').textContent = `${months[this.currentMonth]} ${this.currentYear}`;
+    const headerEl = document.getElementById('currentMonth');
+    if (headerEl) {
+      headerEl.textContent = `${months[this.currentMonth]} ${this.currentYear}`;
+    }
   }
 
   async loadSchedules() {
     try {
       const response = await API.getSchedulesForMonth(this.currentMonth + 1, this.currentYear);
-      if (response.success) {
-        this.schedules = response.schedules;
+      if (response && response.success) {
+        this.schedules = response.schedules || [];
+        console.log('Loaded schedules:', this.schedules.length);
       }
     } catch (error) {
       console.error('Failed to load schedules:', error);
@@ -67,6 +116,11 @@ class Calendar {
 
   renderDays() {
     const container = document.getElementById('calendarDays');
+    if (!container) {
+      console.error('Calendar container not found');
+      return;
+    }
+
     container.innerHTML = '';
 
     const firstDay = new Date(this.currentYear, this.currentMonth, 1);
@@ -92,6 +146,7 @@ class Calendar {
 
       const dateStr = this.formatDate(this.currentYear, this.currentMonth + 1, day);
       const daySchedules = this.schedules.filter(s => {
+        if (!s.date) return false;
         const scheduleDate = new Date(s.date).toISOString().split('T')[0];
         return scheduleDate === dateStr;
       });
@@ -100,12 +155,15 @@ class Calendar {
       container.appendChild(dayEl);
     }
 
-    // Next month days
-    const remainingDays = 42 - (startingDay + totalDays);
+    // Next month days to fill grid (6 rows x 7 days = 42)
+    const totalCells = startingDay + totalDays;
+    const remainingDays = totalCells <= 35 ? 35 - totalCells : 42 - totalCells;
     for (let day = 1; day <= remainingDays; day++) {
       const dayEl = this.createDayElement(day, true);
       container.appendChild(dayEl);
     }
+
+    console.log('Rendered days:', totalDays);
   }
 
   createDayElement(day, isOtherMonth, isToday = false, schedules = [], dateStr = null) {
@@ -118,38 +176,51 @@ class Calendar {
     if (isToday) {
       dayEl.classList.add('today');
     }
+    if (schedules.length > 0) {
+      dayEl.classList.add('has-schedules');
+    }
 
-    dayEl.innerHTML = `
-      <div class="day-number">${day}</div>
-      <div class="day-volunteers"></div>
-    `;
+    // Build inner HTML
+    let html = `<div class="day-number">${day}</div>`;
 
-    if (!isOtherMonth && dateStr) {
-      dayEl.addEventListener('click', () => this.openDayModal(dateStr));
-
-      // Render mini avatars
-      const volunteersContainer = dayEl.querySelector('.day-volunteers');
+    if (!isOtherMonth && schedules.length > 0) {
+      html += '<div class="day-volunteers">';
       const maxDisplay = 3;
 
-      schedules.slice(0, maxDisplay).forEach(schedule => {
-        const avatarDiv = document.createElement('div');
-        avatarDiv.className = 'mini-avatar';
-
-        const avatarData = typeof schedule.avatar_data === 'string'
-          ? JSON.parse(schedule.avatar_data)
-          : schedule.avatar_data;
-
-        const avatar = new AvatarCreator(avatarDiv, true);
-        avatar.setOptions(avatarData);
-        volunteersContainer.appendChild(avatarDiv);
+      schedules.slice(0, maxDisplay).forEach((schedule, index) => {
+        html += `<div class="mini-avatar" data-schedule-index="${index}"></div>`;
       });
 
       if (schedules.length > maxDisplay) {
-        const countEl = document.createElement('div');
-        countEl.className = 'volunteer-count';
-        countEl.textContent = `+${schedules.length - maxDisplay} more`;
-        volunteersContainer.appendChild(countEl);
+        html += `<div class="more-count">+${schedules.length - maxDisplay}</div>`;
       }
+      html += '</div>';
+    }
+
+    dayEl.innerHTML = html;
+
+    // Add click handler for current month days
+    if (!isOtherMonth && dateStr) {
+      dayEl.addEventListener('click', () => this.openDayModal(dateStr));
+      dayEl.style.cursor = 'pointer';
+
+      // Render avatars after adding to DOM
+      setTimeout(() => {
+        const avatarDivs = dayEl.querySelectorAll('.mini-avatar');
+        avatarDivs.forEach((div, index) => {
+          if (schedules[index]) {
+            try {
+              const avatarData = typeof schedules[index].avatar_data === 'string'
+                ? JSON.parse(schedules[index].avatar_data)
+                : schedules[index].avatar_data;
+              const avatar = new AvatarCreator(div, true);
+              avatar.setOptions(avatarData || {});
+            } catch (e) {
+              console.error('Avatar error:', e);
+            }
+          }
+        });
+      }, 0);
     }
 
     return dayEl;
@@ -159,54 +230,75 @@ class Calendar {
     this.selectedDate = dateStr;
 
     // Format date for display
-    const date = new Date(dateStr + 'T00:00:00');
+    const date = new Date(dateStr + 'T12:00:00');
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('modalDate').textContent = date.toLocaleDateString('en-US', options);
+    const formattedDate = date.toLocaleDateString('en-US', options);
+
+    const modalDate = document.getElementById('modalDate');
+    const modalSubtitle = document.getElementById('modalSubtitle');
+
+    if (modalDate) modalDate.textContent = formattedDate;
+    if (modalSubtitle) {
+      const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+      modalSubtitle.textContent = `Schedule your volunteer shift`;
+    }
 
     // Load schedules for this date
     try {
       const response = await API.getSchedulesForDate(dateStr);
-      if (response.success) {
-        this.renderVolunteersList(response.schedules);
+      if (response && response.success) {
+        this.renderVolunteersList(response.schedules || []);
       }
     } catch (error) {
       console.error('Failed to load schedules for date:', error);
+      this.renderVolunteersList([]);
     }
 
     // Reset form
-    document.getElementById('scheduleForm').reset();
-    document.getElementById('scheduleError').classList.add('hidden');
+    const form = document.getElementById('scheduleForm');
+    if (form) form.reset();
+
+    const errorEl = document.getElementById('scheduleError');
+    if (errorEl) errorEl.classList.add('hidden');
 
     // Show modal
-    document.getElementById('dayModal').classList.remove('hidden');
+    const modal = document.getElementById('dayModal');
+    if (modal) modal.classList.remove('hidden');
   }
 
   renderVolunteersList(schedules) {
     const container = document.getElementById('volunteersList');
+    if (!container) return;
+
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
 
-    if (schedules.length === 0) {
-      container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 1rem;">No volunteers scheduled for this day yet.</p>';
+    if (!schedules || schedules.length === 0) {
+      container.innerHTML = '<div class="empty-state">No volunteers scheduled yet. Be the first!</div>';
       return;
     }
 
     container.innerHTML = schedules.map(schedule => {
       const avatarData = typeof schedule.avatar_data === 'string'
-        ? JSON.parse(schedule.avatar_data)
-        : schedule.avatar_data;
+        ? JSON.parse(schedule.avatar_data || '{}')
+        : (schedule.avatar_data || {});
 
       const isOwn = schedule.user_id === currentUser.id;
       const editBtn = isOwn
-        ? `<button class="btn btn-tiny btn-secondary edit-btn" onclick="calendar.openEditModal(${schedule.id}, '${schedule.start_time}', '${schedule.end_time}', '${(schedule.description || '').replace(/'/g, "\\'")}')">Edit</button>`
+        ? `<button class="btn btn-edit" onclick="window.calendar.openEditModal(${schedule.id}, '${schedule.start_time}', '${schedule.end_time}', '${(schedule.description || '').replace(/'/g, "\\'")}')">Edit</button>`
         : '';
 
       return `
-        <div class="volunteer-item">
-          <div class="mini-avatar" data-avatar='${JSON.stringify(avatarData)}'></div>
+        <div class="volunteer-item ${isOwn ? 'own-schedule' : ''}">
+          <div class="volunteer-avatar" data-avatar='${JSON.stringify(avatarData)}'></div>
           <div class="volunteer-info">
-            <div class="volunteer-name">${this.escapeHtml(schedule.name)}${isOwn ? ' (You)' : ''}</div>
-            <div class="volunteer-time">${this.formatTime(schedule.start_time)} - ${this.formatTime(schedule.end_time)}</div>
-            ${schedule.description ? `<div class="volunteer-description">${this.escapeHtml(schedule.description)}</div>` : ''}
+            <div class="volunteer-name">${this.escapeHtml(schedule.name)}${isOwn ? ' <span class="you-badge">You</span>' : ''}</div>
+            <div class="volunteer-time">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              ${this.formatTime(schedule.start_time)} - ${this.formatTime(schedule.end_time)}
+            </div>
+            ${schedule.description ? `<div class="volunteer-notes">${this.escapeHtml(schedule.description)}</div>` : ''}
           </div>
           ${editBtn}
         </div>
@@ -214,15 +306,20 @@ class Calendar {
     }).join('');
 
     // Render avatars
-    container.querySelectorAll('.mini-avatar').forEach(el => {
-      const data = JSON.parse(el.dataset.avatar || '{}');
-      const avatar = new AvatarCreator(el, true);
-      avatar.setOptions(data);
+    container.querySelectorAll('.volunteer-avatar').forEach(el => {
+      try {
+        const data = JSON.parse(el.dataset.avatar || '{}');
+        const avatar = new AvatarCreator(el, true);
+        avatar.setOptions(data);
+      } catch (e) {
+        console.error('Avatar render error:', e);
+      }
     });
   }
 
   closeModal() {
-    document.getElementById('dayModal').classList.add('hidden');
+    const modal = document.getElementById('dayModal');
+    if (modal) modal.classList.add('hidden');
     this.selectedDate = null;
   }
 
@@ -230,60 +327,76 @@ class Calendar {
     e.preventDefault();
     const errorEl = document.getElementById('scheduleError');
 
-    const startTime = document.getElementById('startTime').value;
-    const endTime = document.getElementById('endTime').value;
-    const description = document.getElementById('description').value;
+    const startTime = document.getElementById('startTime')?.value;
+    const endTime = document.getElementById('endTime')?.value;
+    const description = document.getElementById('description')?.value || '';
 
     if (!startTime || !endTime) {
-      errorEl.textContent = 'Please select both start and end times.';
-      errorEl.classList.remove('hidden');
+      if (errorEl) {
+        errorEl.textContent = 'Please select both start and end times.';
+        errorEl.classList.remove('hidden');
+      }
       return;
     }
 
     if (startTime >= endTime) {
-      errorEl.textContent = 'End time must be after start time.';
-      errorEl.classList.remove('hidden');
+      if (errorEl) {
+        errorEl.textContent = 'End time must be after start time.';
+        errorEl.classList.remove('hidden');
+      }
       return;
     }
 
     try {
       const response = await API.createSchedule(this.selectedDate, startTime, endTime, description);
-      if (response.success) {
+      if (response && response.success) {
         this.closeModal();
         await this.render();
       }
     } catch (error) {
-      errorEl.textContent = error.message || 'Failed to create schedule.';
-      errorEl.classList.remove('hidden');
+      if (errorEl) {
+        errorEl.textContent = error.message || 'Failed to create schedule.';
+        errorEl.classList.remove('hidden');
+      }
     }
   }
 
   openEditModal(scheduleId, startTime, endTime, description) {
-    document.getElementById('editScheduleId').value = scheduleId;
-    document.getElementById('editStartTime').value = startTime;
-    document.getElementById('editEndTime').value = endTime;
-    document.getElementById('editDescription').value = description;
-    document.getElementById('editError').classList.add('hidden');
+    const idEl = document.getElementById('editScheduleId');
+    const startEl = document.getElementById('editStartTime');
+    const endEl = document.getElementById('editEndTime');
+    const descEl = document.getElementById('editDescription');
+    const errorEl = document.getElementById('editError');
 
-    document.getElementById('editModal').classList.remove('hidden');
+    if (idEl) idEl.value = scheduleId;
+    if (startEl) startEl.value = startTime;
+    if (endEl) endEl.value = endTime;
+    if (descEl) descEl.value = description;
+    if (errorEl) errorEl.classList.add('hidden');
+
+    const modal = document.getElementById('editModal');
+    if (modal) modal.classList.remove('hidden');
   }
 
   closeEditModal() {
-    document.getElementById('editModal').classList.add('hidden');
+    const modal = document.getElementById('editModal');
+    if (modal) modal.classList.add('hidden');
   }
 
   async handleEditSubmit(e) {
     e.preventDefault();
     const errorEl = document.getElementById('editError');
 
-    const scheduleId = document.getElementById('editScheduleId').value;
-    const startTime = document.getElementById('editStartTime').value;
-    const endTime = document.getElementById('editEndTime').value;
-    const description = document.getElementById('editDescription').value;
+    const scheduleId = document.getElementById('editScheduleId')?.value;
+    const startTime = document.getElementById('editStartTime')?.value;
+    const endTime = document.getElementById('editEndTime')?.value;
+    const description = document.getElementById('editDescription')?.value || '';
 
     if (startTime >= endTime) {
-      errorEl.textContent = 'End time must be after start time.';
-      errorEl.classList.remove('hidden');
+      if (errorEl) {
+        errorEl.textContent = 'End time must be after start time.';
+        errorEl.classList.remove('hidden');
+      }
       return;
     }
 
@@ -294,40 +407,43 @@ class Calendar {
         description
       });
 
-      if (response.success) {
+      if (response && response.success) {
         this.closeEditModal();
         await this.render();
-        // Reopen day modal to show updated list
         if (this.selectedDate) {
           await this.openDayModal(this.selectedDate);
         }
       }
     } catch (error) {
-      errorEl.textContent = error.message || 'Failed to update schedule.';
-      errorEl.classList.remove('hidden');
+      if (errorEl) {
+        errorEl.textContent = error.message || 'Failed to update schedule.';
+        errorEl.classList.remove('hidden');
+      }
     }
   }
 
   async handleDelete() {
-    const scheduleId = document.getElementById('editScheduleId').value;
+    const scheduleId = document.getElementById('editScheduleId')?.value;
 
-    if (!confirm('Are you sure you want to delete this schedule?')) {
+    if (!confirm('Are you sure you want to delete this shift?')) {
       return;
     }
 
     try {
       const response = await API.deleteSchedule(scheduleId);
-      if (response.success) {
+      if (response && response.success) {
         this.closeEditModal();
         await this.render();
-        // Reopen day modal to show updated list
         if (this.selectedDate) {
           await this.openDayModal(this.selectedDate);
         }
       }
     } catch (error) {
-      document.getElementById('editError').textContent = error.message || 'Failed to delete schedule.';
-      document.getElementById('editError').classList.remove('hidden');
+      const errorEl = document.getElementById('editError');
+      if (errorEl) {
+        errorEl.textContent = error.message || 'Failed to delete schedule.';
+        errorEl.classList.remove('hidden');
+      }
     }
   }
 
@@ -365,5 +481,5 @@ class Calendar {
   }
 }
 
-// Make calendar instance globally accessible for inline event handlers
-let calendar;
+// Global reference
+window.Calendar = Calendar;

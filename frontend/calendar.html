@@ -6,65 +6,105 @@
   <title>Calendar - OmniVet Team Planner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-  <nav class="navbar">
+<body class="calendar-page">
+  <!-- Futuristic Background -->
+  <div class="bg-gradient"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar glass">
     <div class="nav-brand">
-      <svg width="32" height="32" viewBox="0 0 64 64" fill="none">
-        <circle cx="32" cy="32" r="30" fill="#6366F1"/>
-        <path d="M20 32C20 25.373 25.373 20 32 20C38.627 20 44 25.373 44 32" stroke="white" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="32" cy="38" r="6" fill="white"/>
-      </svg>
-      <span>OmniVet Team Planner</span>
+      <div class="logo-icon">
+        <svg width="36" height="36" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="30" fill="url(#logoGrad)"/>
+          <path d="M20 32C20 25.373 25.373 20 32 20C38.627 20 44 25.373 44 32" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="32" cy="38" r="6" fill="white"/>
+          <defs>
+            <linearGradient id="logoGrad" x1="0" y1="0" x2="64" y2="64">
+              <stop offset="0%" stop-color="#818CF8"/>
+              <stop offset="100%" stop-color="#6366F1"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span>OmniVet Planner</span>
     </div>
-    <div class="nav-links">
-      <a href="avatar.html" class="nav-avatar" id="userAvatar">
-        <!-- Avatar preview will be rendered here -->
+    <div class="nav-actions">
+      <a href="avatar.html" class="nav-avatar-link" title="Edit Avatar">
+        <div class="nav-avatar" id="userAvatar"></div>
       </a>
       <span id="userName" class="user-name"></span>
-      <button id="logoutBtn" class="btn btn-secondary btn-small">Logout</button>
+      <button id="logoutBtn" class="btn btn-glass">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Logout
+      </button>
     </div>
   </nav>
 
-  <div class="container calendar-container">
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Calendar Header -->
     <div class="calendar-header">
-      <button id="prevMonth" class="btn btn-icon">
+      <button id="prevMonth" class="btn btn-nav" aria-label="Previous month">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M15 18l-6-6 6-6"/>
         </svg>
       </button>
-      <h1 id="currentMonth">January 2024</h1>
-      <button id="nextMonth" class="btn btn-icon">
+      <div class="month-display">
+        <h1 id="currentMonth">Loading...</h1>
+        <button id="todayBtn" class="btn btn-today">Today</button>
+      </div>
+      <button id="nextMonth" class="btn btn-nav" aria-label="Next month">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 18l6-6-6-6"/>
         </svg>
       </button>
     </div>
 
-    <div class="calendar-grid">
+    <!-- Calendar Grid -->
+    <div class="calendar-wrapper glass">
       <div class="calendar-weekdays">
-        <div class="weekday">Sun</div>
-        <div class="weekday">Mon</div>
-        <div class="weekday">Tue</div>
-        <div class="weekday">Wed</div>
-        <div class="weekday">Thu</div>
-        <div class="weekday">Fri</div>
-        <div class="weekday">Sat</div>
+        <div class="weekday">SUN</div>
+        <div class="weekday">MON</div>
+        <div class="weekday">TUE</div>
+        <div class="weekday">WED</div>
+        <div class="weekday">THU</div>
+        <div class="weekday">FRI</div>
+        <div class="weekday">SAT</div>
       </div>
       <div class="calendar-days" id="calendarDays">
-        <!-- Days will be rendered by JavaScript -->
+        <!-- Days rendered by JS -->
       </div>
     </div>
-  </div>
+
+    <!-- Legend -->
+    <div class="calendar-legend">
+      <div class="legend-item">
+        <div class="legend-dot today-dot"></div>
+        <span>Today</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot scheduled-dot"></div>
+        <span>Volunteers Scheduled</span>
+      </div>
+    </div>
+  </main>
 
   <!-- Day Detail Modal -->
   <div class="modal-overlay hidden" id="dayModal">
-    <div class="modal">
+    <div class="modal glass">
       <div class="modal-header">
-        <h2 id="modalDate">January 15, 2024</h2>
-        <button class="btn btn-icon" id="closeModal">
+        <div class="modal-title">
+          <h2 id="modalDate">Select a Date</h2>
+          <p id="modalSubtitle" class="modal-subtitle"></p>
+        </div>
+        <button class="btn btn-icon-close" id="closeModal" aria-label="Close">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 6L6 18M6 6l12 12"/>
           </svg>
@@ -72,33 +112,53 @@
       </div>
 
       <div class="modal-body">
-        <div class="volunteers-list" id="volunteersList">
-          <!-- Volunteers will be rendered here -->
+        <!-- Volunteers Section -->
+        <div class="section">
+          <h3 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Scheduled Volunteers
+          </h3>
+          <div class="volunteers-list" id="volunteersList">
+            <div class="empty-state">No volunteers yet</div>
+          </div>
         </div>
 
-        <div class="schedule-form">
-          <h3>Add Your Schedule</h3>
-          <form id="scheduleForm">
-            <div class="time-inputs">
+        <!-- Add Schedule Form -->
+        <div class="section">
+          <h3 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Add Your Shift
+          </h3>
+          <form id="scheduleForm" class="schedule-form">
+            <div class="time-row">
               <div class="form-group">
-                <label for="startTime">Start Time</label>
+                <label for="startTime">Start</label>
                 <input type="time" id="startTime" required>
               </div>
+              <div class="time-separator">to</div>
               <div class="form-group">
-                <label for="endTime">End Time</label>
+                <label for="endTime">End</label>
                 <input type="time" id="endTime" required>
               </div>
             </div>
             <div class="form-group">
-              <label for="description">Notes (optional)</label>
-              <textarea id="description" rows="2" placeholder="Any special notes..."></textarea>
+              <label for="description">Notes <span class="optional">(optional)</span></label>
+              <textarea id="description" rows="2" placeholder="Any special notes for this shift..."></textarea>
             </div>
             <div id="scheduleError" class="error-message hidden"></div>
             <button type="submit" class="btn btn-primary btn-full">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 5v14M5 12h14"/>
               </svg>
-              <span>Add to Schedule</span>
+              Add to Schedule
             </button>
           </form>
         </div>
@@ -108,10 +168,10 @@
 
   <!-- Edit Schedule Modal -->
   <div class="modal-overlay hidden" id="editModal">
-    <div class="modal">
+    <div class="modal glass modal-small">
       <div class="modal-header">
-        <h2>Edit Schedule</h2>
-        <button class="btn btn-icon" id="closeEditModal">
+        <h2>Edit Your Shift</h2>
+        <button class="btn btn-icon-close" id="closeEditModal" aria-label="Close">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 6L6 18M6 6l12 12"/>
           </svg>
@@ -121,24 +181,31 @@
       <div class="modal-body">
         <form id="editScheduleForm">
           <input type="hidden" id="editScheduleId">
-          <div class="time-inputs">
+          <div class="time-row">
             <div class="form-group">
-              <label for="editStartTime">Start Time</label>
+              <label for="editStartTime">Start</label>
               <input type="time" id="editStartTime" required>
             </div>
+            <div class="time-separator">to</div>
             <div class="form-group">
-              <label for="editEndTime">End Time</label>
+              <label for="editEndTime">End</label>
               <input type="time" id="editEndTime" required>
             </div>
           </div>
           <div class="form-group">
-            <label for="editDescription">Notes (optional)</label>
+            <label for="editDescription">Notes</label>
             <textarea id="editDescription" rows="2"></textarea>
           </div>
           <div id="editError" class="error-message hidden"></div>
-          <div class="button-group">
+          <div class="button-row">
             <button type="submit" class="btn btn-primary">Save Changes</button>
-            <button type="button" id="deleteScheduleBtn" class="btn btn-danger">Delete</button>
+            <button type="button" id="deleteScheduleBtn" class="btn btn-danger">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+              Delete
+            </button>
           </div>
         </form>
       </div>
@@ -155,27 +222,42 @@
       window.location.href = 'login.html';
     }
 
-    // Initialize calendar
-    const calendar = new Calendar();
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        // Initialize calendar
+        window.calendar = new Calendar();
 
-    // Display user info
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    document.getElementById('userName').textContent = user.name || 'User';
+        // Display user info
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        document.getElementById('userName').textContent = user.name || 'User';
 
-    // Render user's avatar in navbar
-    if (user.avatar_data) {
-      const miniAvatar = new AvatarCreator('userAvatar', true);
-      miniAvatar.setOptions(typeof user.avatar_data === 'string'
-        ? JSON.parse(user.avatar_data)
-        : user.avatar_data
-      );
-    }
+        // Render user's avatar in navbar
+        const avatarContainer = document.getElementById('userAvatar');
+        if (user.avatar_data && avatarContainer) {
+          try {
+            const avatarData = typeof user.avatar_data === 'string'
+              ? JSON.parse(user.avatar_data)
+              : user.avatar_data;
+            const miniAvatar = new AvatarCreator(avatarContainer, true);
+            miniAvatar.setOptions(avatarData);
+          } catch (e) {
+            console.error('Avatar render error:', e);
+          }
+        }
 
-    // Logout handler
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
-      window.location.href = 'login.html';
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
+          window.location.href = 'login.html';
+        });
+
+      } catch (error) {
+        console.error('Initialization error:', error);
+        document.getElementById('calendarDays').innerHTML =
+          '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #ef4444;">Error loading calendar. Please refresh the page.</div>';
+      }
     });
   </script>
 </body>
