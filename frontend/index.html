@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniVet Team Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card master-card">
+      <div class="logo">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="30" fill="#6366F1" stroke="#4F46E5" stroke-width="2"/>
+          <path d="M20 32C20 25.373 25.373 20 32 20C38.627 20 44 25.373 44 32" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="32" cy="38" r="6" fill="white"/>
+          <path d="M26 28L32 22L38 28" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1>OmniVet Team Planner</h1>
+      <p class="subtitle">Volunteer Scheduling Portal</p>
+
+      <form id="masterForm" class="form">
+        <div class="form-group">
+          <label for="masterPassword">Enter Access Code</label>
+          <input
+            type="password"
+            id="masterPassword"
+            placeholder="Enter master password"
+            autocomplete="off"
+            required
+          >
+        </div>
+        <div id="errorMessage" class="error-message hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full">
+          <span>Access Portal</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Check if already authenticated
+    if (localStorage.getItem('masterToken')) {
+      window.location.href = 'login.html';
+    }
+
+    document.getElementById('masterForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('masterPassword').value;
+      const errorEl = document.getElementById('errorMessage');
+
+      try {
+        const response = await API.verifyMasterPassword(password);
+        if (response.success) {
+          localStorage.setItem('masterToken', response.token);
+          window.location.href = 'login.html';
+        }
+      } catch (error) {
+        errorEl.textContent = 'Invalid access code. Please try again.';
+        errorEl.classList.remove('hidden');
+        document.getElementById('masterPassword').value = '';
+      }
+    });
+  </script>
+</body>
+</html>

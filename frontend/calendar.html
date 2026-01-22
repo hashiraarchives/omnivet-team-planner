@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar - OmniVet Team Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <svg width="32" height="32" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="30" fill="#6366F1"/>
+        <path d="M20 32C20 25.373 25.373 20 32 20C38.627 20 44 25.373 44 32" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="32" cy="38" r="6" fill="white"/>
+      </svg>
+      <span>OmniVet Team Planner</span>
+    </div>
+    <div class="nav-links">
+      <a href="avatar.html" class="nav-avatar" id="userAvatar">
+        <!-- Avatar preview will be rendered here -->
+      </a>
+      <span id="userName" class="user-name"></span>
+      <button id="logoutBtn" class="btn btn-secondary btn-small">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container calendar-container">
+    <div class="calendar-header">
+      <button id="prevMonth" class="btn btn-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <h1 id="currentMonth">January 2024</h1>
+      <button id="nextMonth" class="btn btn-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="calendar-grid">
+      <div class="calendar-weekdays">
+        <div class="weekday">Sun</div>
+        <div class="weekday">Mon</div>
+        <div class="weekday">Tue</div>
+        <div class="weekday">Wed</div>
+        <div class="weekday">Thu</div>
+        <div class="weekday">Fri</div>
+        <div class="weekday">Sat</div>
+      </div>
+      <div class="calendar-days" id="calendarDays">
+        <!-- Days will be rendered by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Day Detail Modal -->
+  <div class="modal-overlay hidden" id="dayModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalDate">January 15, 2024</h2>
+        <button class="btn btn-icon" id="closeModal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="volunteers-list" id="volunteersList">
+          <!-- Volunteers will be rendered here -->
+        </div>
+
+        <div class="schedule-form">
+          <h3>Add Your Schedule</h3>
+          <form id="scheduleForm">
+            <div class="time-inputs">
+              <div class="form-group">
+                <label for="startTime">Start Time</label>
+                <input type="time" id="startTime" required>
+              </div>
+              <div class="form-group">
+                <label for="endTime">End Time</label>
+                <input type="time" id="endTime" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="description">Notes (optional)</label>
+              <textarea id="description" rows="2" placeholder="Any special notes..."></textarea>
+            </div>
+            <div id="scheduleError" class="error-message hidden"></div>
+            <button type="submit" class="btn btn-primary btn-full">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              <span>Add to Schedule</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Schedule Modal -->
+  <div class="modal-overlay hidden" id="editModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Edit Schedule</h2>
+        <button class="btn btn-icon" id="closeEditModal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form id="editScheduleForm">
+          <input type="hidden" id="editScheduleId">
+          <div class="time-inputs">
+            <div class="form-group">
+              <label for="editStartTime">Start Time</label>
+              <input type="time" id="editStartTime" required>
+            </div>
+            <div class="form-group">
+              <label for="editEndTime">End Time</label>
+              <input type="time" id="editEndTime" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="editDescription">Notes (optional)</label>
+            <textarea id="editDescription" rows="2"></textarea>
+          </div>
+          <div id="editError" class="error-message hidden"></div>
+          <div class="button-group">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <button type="button" id="deleteScheduleBtn" class="btn btn-danger">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/avatar.js"></script>
+  <script src="js/calendar.js"></script>
+  <script>
+    // Check authentication
+    if (!localStorage.getItem('authToken')) {
+      window.location.href = 'login.html';
+    }
+
+    // Initialize calendar
+    const calendar = new Calendar();
+
+    // Display user info
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    document.getElementById('userName').textContent = user.name || 'User';
+
+    // Render user's avatar in navbar
+    if (user.avatar_data) {
+      const miniAvatar = new AvatarCreator('userAvatar', true);
+      miniAvatar.setOptions(typeof user.avatar_data === 'string'
+        ? JSON.parse(user.avatar_data)
+        : user.avatar_data
+      );
+    }
+
+    // Logout handler
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>

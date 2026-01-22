@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - OmniVet Team Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Admin Login -->
+  <div class="container" id="adminLoginContainer">
+    <div class="card master-card">
+      <div class="logo">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <h1>Admin Access</h1>
+      <p class="subtitle">Enter admin password to continue</p>
+
+      <form id="adminLoginForm" class="form">
+        <div class="form-group">
+          <label for="adminPassword">Admin Password</label>
+          <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+        </div>
+        <div id="adminLoginError" class="error-message hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full">
+          <span>Access Admin Panel</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </form>
+      <a href="calendar.html" class="back-link">Back to Calendar</a>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div class="admin-panel hidden" id="adminPanel">
+    <nav class="navbar">
+      <div class="nav-brand">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>Admin Panel</span>
+      </div>
+      <div class="nav-links">
+        <a href="calendar.html" class="btn btn-secondary btn-small">Back to Calendar</a>
+        <button id="adminLogoutBtn" class="btn btn-secondary btn-small">Logout Admin</button>
+      </div>
+    </nav>
+
+    <div class="container admin-container">
+      <!-- Tabs -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="users">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          Users
+        </button>
+        <button class="admin-tab" data-tab="schedules">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Schedules
+        </button>
+      </div>
+
+      <!-- Users Tab -->
+      <div class="admin-content" id="usersTab">
+        <div class="section-header">
+          <h2>Registered Users</h2>
+          <span class="count" id="userCount">0 users</span>
+        </div>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Avatar</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Password</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <!-- Users will be rendered here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Schedules Tab -->
+      <div class="admin-content hidden" id="schedulesTab">
+        <div class="section-header">
+          <h2>All Schedules</h2>
+          <span class="count" id="scheduleCount">0 schedules</span>
+        </div>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Avatar</th>
+                <th>Volunteer</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Notes</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="schedulesTableBody">
+              <!-- Schedules will be rendered here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div class="modal-overlay hidden" id="confirmModal">
+    <div class="modal modal-small">
+      <div class="modal-header">
+        <h2>Confirm Delete</h2>
+        <button class="btn btn-icon" id="closeConfirmModal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMessage">Are you sure you want to delete this item?</p>
+        <div class="button-group">
+          <button id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+          <button id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/avatar.js"></script>
+  <script>
+    let deleteCallback = null;
+
+    // Check for existing admin session
+    if (localStorage.getItem('adminToken')) {
+      showAdminPanel();
+    }
+
+    // Admin login form
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('adminPassword').value;
+      const errorEl = document.getElementById('adminLoginError');
+
+      try {
+        const response = await API.verifyAdminPassword(password);
+        if (response.success) {
+          localStorage.setItem('adminToken', response.token);
+          showAdminPanel();
+        }
+      } catch (error) {
+        errorEl.textContent = 'Invalid admin password.';
+        errorEl.classList.remove('hidden');
+      }
+    });
+
+    // Show admin panel
+    function showAdminPanel() {
+      document.getElementById('adminLoginContainer').classList.add('hidden');
+      document.getElementById('adminPanel').classList.remove('hidden');
+      loadUsers();
+      loadSchedules();
+    }
+
+    // Admin logout
+    document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('adminToken');
+      location.reload();
+    });
+
+    // Tab switching
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        document.getElementById('usersTab').classList.toggle('hidden', tab.dataset.tab !== 'users');
+        document.getElementById('schedulesTab').classList.toggle('hidden', tab.dataset.tab !== 'schedules');
+      });
+    });
+
+    // Load users
+    async function loadUsers() {
+      try {
+        const response = await API.adminGetUsers();
+        if (response.success) {
+          const tbody = document.getElementById('usersTableBody');
+          document.getElementById('userCount').textContent = `${response.users.length} users`;
+
+          tbody.innerHTML = response.users.map(user => {
+            const avatarData = typeof user.avatar_data === 'string'
+              ? JSON.parse(user.avatar_data)
+              : user.avatar_data;
+
+            return `
+              <tr>
+                <td>
+                  <div class="table-avatar" data-avatar='${JSON.stringify(avatarData)}'></div>
+                </td>
+                <td>${escapeHtml(user.name)}</td>
+                <td>${escapeHtml(user.phone)}</td>
+                <td>
+                  <span class="password-field hidden-password">********</span>
+                  <span class="password-field visible-password hidden">${escapeHtml(user.password)}</span>
+                  <button class="btn btn-tiny toggle-password">Show</button>
+                </td>
+                <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                <td>
+                  <button class="btn btn-tiny btn-danger delete-user" data-id="${user.id}" data-name="${escapeHtml(user.name)}">Delete</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          // Render avatars
+          document.querySelectorAll('.table-avatar').forEach(el => {
+            const data = JSON.parse(el.dataset.avatar || '{}');
+            const avatar = new AvatarCreator(el, true);
+            avatar.setOptions(data);
+          });
+
+          // Toggle password visibility
+          document.querySelectorAll('.toggle-password').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const row = btn.closest('td');
+              const hidden = row.querySelector('.hidden-password');
+              const visible = row.querySelector('.visible-password');
+              const isHidden = !hidden.classList.contains('hidden');
+
+              hidden.classList.toggle('hidden', !isHidden);
+              visible.classList.toggle('hidden', isHidden);
+              btn.textContent = isHidden ? 'Show' : 'Hide';
+            });
+          });
+
+          // Delete user handlers
+          document.querySelectorAll('.delete-user').forEach(btn => {
+            btn.addEventListener('click', () => {
+              showConfirmModal(
+                `Are you sure you want to delete user "${btn.dataset.name}"? This will also delete all their schedules.`,
+                async () => {
+                  await API.adminDeleteUser(btn.dataset.id);
+                  loadUsers();
+                  loadSchedules();
+                }
+              );
+            });
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load users:', error);
+      }
+    }
+
+    // Load schedules
+    async function loadSchedules() {
+      try {
+        const response = await API.adminGetSchedules();
+        if (response.success) {
+          const tbody = document.getElementById('schedulesTableBody');
+          document.getElementById('scheduleCount').textContent = `${response.schedules.length} schedules`;
+
+          tbody.innerHTML = response.schedules.map(schedule => {
+            const avatarData = typeof schedule.avatar_data === 'string'
+              ? JSON.parse(schedule.avatar_data)
+              : schedule.avatar_data;
+
+            return `
+              <tr>
+                <td>
+                  <div class="table-avatar" data-avatar='${JSON.stringify(avatarData)}'></div>
+                </td>
+                <td>${escapeHtml(schedule.name)}</td>
+                <td>${new Date(schedule.date).toLocaleDateString()}</td>
+                <td>${formatTime(schedule.start_time)} - ${formatTime(schedule.end_time)}</td>
+                <td>${escapeHtml(schedule.description || '-')}</td>
+                <td>
+                  <button class="btn btn-tiny btn-danger delete-schedule" data-id="${schedule.id}">Delete</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          // Render avatars
+          document.querySelectorAll('#schedulesTableBody .table-avatar').forEach(el => {
+            const data = JSON.parse(el.dataset.avatar || '{}');
+            const avatar = new AvatarCreator(el, true);
+            avatar.setOptions(data);
+          });
+
+          // Delete schedule handlers
+          document.querySelectorAll('.delete-schedule').forEach(btn => {
+            btn.addEventListener('click', () => {
+              showConfirmModal(
+                'Are you sure you want to delete this schedule?',
+                async () => {
+                  await API.adminDeleteSchedule(btn.dataset.id);
+                  loadSchedules();
+                }
+              );
+            });
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load schedules:', error);
+      }
+    }
+
+    // Confirm modal
+    function showConfirmModal(message, callback) {
+      document.getElementById('confirmMessage').textContent = message;
+      document.getElementById('confirmModal').classList.remove('hidden');
+      deleteCallback = callback;
+    }
+
+    document.getElementById('closeConfirmModal').addEventListener('click', () => {
+      document.getElementById('confirmModal').classList.add('hidden');
+      deleteCallback = null;
+    });
+
+    document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
+      document.getElementById('confirmModal').classList.add('hidden');
+      deleteCallback = null;
+    });
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+      if (deleteCallback) {
+        await deleteCallback();
+        deleteCallback = null;
+      }
+      document.getElementById('confirmModal').classList.add('hidden');
+    });
+
+    // Helper functions
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text || '';
+      return div.innerHTML;
+    }
+
+    function formatTime(time) {
+      if (!time) return '';
+      const [hours, minutes] = time.split(':');
+      const h = parseInt(hours);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const hour12 = h % 12 || 12;
+      return `${hour12}:${minutes} ${ampm}`;
+    }
+  </script>
+</body>
+</html>

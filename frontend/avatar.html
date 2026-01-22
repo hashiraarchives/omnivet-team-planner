@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Your Avatar - OmniVet Team Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <svg width="32" height="32" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="30" fill="#6366F1"/>
+        <path d="M20 32C20 25.373 25.373 20 32 20C38.627 20 44 25.373 44 32" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="32" cy="38" r="6" fill="white"/>
+      </svg>
+      <span>OmniVet Team Planner</span>
+    </div>
+    <div class="nav-links">
+      <a href="calendar.html">Skip for Now</a>
+    </div>
+  </nav>
+
+  <div class="container avatar-container">
+    <div class="avatar-creator">
+      <div class="avatar-preview-section">
+        <h2>Your Avatar</h2>
+        <div class="avatar-preview-large" id="avatarPreview">
+          <!-- Avatar will be rendered here by JavaScript -->
+        </div>
+        <button id="randomizeBtn" class="btn btn-secondary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+            <path d="M16 16h5v5"/>
+          </svg>
+          Randomize
+        </button>
+      </div>
+
+      <div class="avatar-options-section">
+        <h2>Customize</h2>
+
+        <!-- Face Shape -->
+        <div class="option-group">
+          <label>Face Shape</label>
+          <div class="option-buttons" data-option="faceShape">
+            <button class="option-btn active" data-value="round">Round</button>
+            <button class="option-btn" data-value="oval">Oval</button>
+            <button class="option-btn" data-value="square">Square</button>
+            <button class="option-btn" data-value="heart">Heart</button>
+          </div>
+        </div>
+
+        <!-- Skin Tone -->
+        <div class="option-group">
+          <label>Skin Tone</label>
+          <div class="color-options" data-option="skinTone">
+            <button class="color-btn active" data-value="#FDEBD0" style="background-color: #FDEBD0;"></button>
+            <button class="color-btn" data-value="#F5D0C5" style="background-color: #F5D0C5;"></button>
+            <button class="color-btn" data-value="#D4A574" style="background-color: #D4A574;"></button>
+            <button class="color-btn" data-value="#C68642" style="background-color: #C68642;"></button>
+            <button class="color-btn" data-value="#8D5524" style="background-color: #8D5524;"></button>
+            <button class="color-btn" data-value="#5C3A21" style="background-color: #5C3A21;"></button>
+          </div>
+        </div>
+
+        <!-- Hair Style -->
+        <div class="option-group">
+          <label>Hair Style</label>
+          <div class="option-buttons scrollable" data-option="hairStyle">
+            <button class="option-btn active" data-value="short">Short</button>
+            <button class="option-btn" data-value="medium">Medium</button>
+            <button class="option-btn" data-value="long">Long</button>
+            <button class="option-btn" data-value="curly">Curly</button>
+            <button class="option-btn" data-value="wavy">Wavy</button>
+            <button class="option-btn" data-value="bun">Bun</button>
+            <button class="option-btn" data-value="ponytail">Ponytail</button>
+            <button class="option-btn" data-value="bald">Bald</button>
+          </div>
+        </div>
+
+        <!-- Hair Color -->
+        <div class="option-group">
+          <label>Hair Color</label>
+          <div class="color-options" data-option="hairColor">
+            <button class="color-btn active" data-value="#1C1C1C" style="background-color: #1C1C1C;"></button>
+            <button class="color-btn" data-value="#3D2314" style="background-color: #3D2314;"></button>
+            <button class="color-btn" data-value="#D4A76A" style="background-color: #D4A76A;"></button>
+            <button class="color-btn" data-value="#B55239" style="background-color: #B55239;"></button>
+            <button class="color-btn" data-value="#8B8B8B" style="background-color: #8B8B8B;"></button>
+            <button class="color-btn" data-value="#4A90D9" style="background-color: #4A90D9;"></button>
+            <button class="color-btn" data-value="#E57BA6" style="background-color: #E57BA6;"></button>
+            <button class="color-btn" data-value="#9B59B6" style="background-color: #9B59B6;"></button>
+          </div>
+        </div>
+
+        <!-- Eyes -->
+        <div class="option-group">
+          <label>Eyes</label>
+          <div class="option-buttons" data-option="eyes">
+            <button class="option-btn active" data-value="round">Round</button>
+            <button class="option-btn" data-value="almond">Almond</button>
+            <button class="option-btn" data-value="cat">Cat</button>
+            <button class="option-btn" data-value="wide">Wide</button>
+            <button class="option-btn" data-value="sleepy">Sleepy</button>
+            <button class="option-btn" data-value="sparkle">Sparkle</button>
+          </div>
+        </div>
+
+        <!-- Eyebrows -->
+        <div class="option-group">
+          <label>Eyebrows</label>
+          <div class="option-buttons" data-option="eyebrows">
+            <button class="option-btn" data-value="thin">Thin</button>
+            <button class="option-btn active" data-value="thick">Thick</button>
+            <button class="option-btn" data-value="arched">Arched</button>
+            <button class="option-btn" data-value="straight">Straight</button>
+            <button class="option-btn" data-value="expressive">Expressive</button>
+          </div>
+        </div>
+
+        <!-- Mouth -->
+        <div class="option-group">
+          <label>Mouth</label>
+          <div class="option-buttons" data-option="mouth">
+            <button class="option-btn active" data-value="smile">Smile</button>
+            <button class="option-btn" data-value="grin">Grin</button>
+            <button class="option-btn" data-value="neutral">Neutral</button>
+            <button class="option-btn" data-value="smirk">Smirk</button>
+            <button class="option-btn" data-value="open">Open</button>
+          </div>
+        </div>
+
+        <!-- Accessories -->
+        <div class="option-group">
+          <label>Accessories</label>
+          <div class="option-buttons" data-option="accessory">
+            <button class="option-btn active" data-value="none">None</button>
+            <button class="option-btn" data-value="glasses">Glasses</button>
+            <button class="option-btn" data-value="sunglasses">Sunglasses</button>
+            <button class="option-btn" data-value="hat">Hat</button>
+            <button class="option-btn" data-value="headband">Headband</button>
+            <button class="option-btn" data-value="earrings">Earrings</button>
+          </div>
+        </div>
+
+        <button id="saveAvatarBtn" class="btn btn-primary btn-full">
+          <span>Save & Continue</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/avatar.js"></script>
+  <script>
+    // Check authentication
+    if (!localStorage.getItem('authToken')) {
+      window.location.href = 'login.html';
+    }
+
+    // Initialize avatar creator
+    const avatarCreator = new AvatarCreator('avatarPreview');
+
+    // Load existing avatar data if any
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.avatar_data && typeof user.avatar_data === 'object') {
+      avatarCreator.setOptions(user.avatar_data);
+    }
+
+    // Option button handlers
+    document.querySelectorAll('.option-buttons').forEach(group => {
+      const option = group.dataset.option;
+      group.querySelectorAll('.option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          avatarCreator.setOption(option, btn.dataset.value);
+        });
+      });
+    });
+
+    // Color option handlers
+    document.querySelectorAll('.color-options').forEach(group => {
+      const option = group.dataset.option;
+      group.querySelectorAll('.color-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          group.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          avatarCreator.setOption(option, btn.dataset.value);
+        });
+      });
+    });
+
+    // Randomize button
+    document.getElementById('randomizeBtn').addEventListener('click', () => {
+      avatarCreator.randomize();
+      updateUIFromAvatar();
+    });
+
+    // Save avatar
+    document.getElementById('saveAvatarBtn').addEventListener('click', async () => {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      try {
+        const response = await API.updateAvatar(user.id, avatarCreator.getOptions());
+        if (response.success) {
+          localStorage.setItem('user', JSON.stringify(response.user));
+          window.location.href = 'calendar.html';
+        }
+      } catch (error) {
+        alert('Failed to save avatar. Please try again.');
+      }
+    });
+
+    // Update UI to match avatar state
+    function updateUIFromAvatar() {
+      const options = avatarCreator.getOptions();
+
+      // Update option buttons
+      document.querySelectorAll('.option-buttons').forEach(group => {
+        const option = group.dataset.option;
+        if (options[option]) {
+          group.querySelectorAll('.option-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.value === options[option]);
+          });
+        }
+      });
+
+      // Update color buttons
+      document.querySelectorAll('.color-options').forEach(group => {
+        const option = group.dataset.option;
+        if (options[option]) {
+          group.querySelectorAll('.color-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.value === options[option]);
+          });
+        }
+      });
+    }
+  </script>
+</body>
+</html>
