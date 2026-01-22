@@ -1,8 +1,6 @@
-// Configuration - Update BACKEND_URL after deploying backend to Railway
+// Configuration
 const CONFIG = {
-  // Replace this with your Railway backend URL after deployment
-  // Example: 'https://omnivet-backend-production.up.railway.app'
-  BACKEND_URL: null
+  BACKEND_URL: 'https://omnivet-team-planner-production.up.railway.app'
 };
 
 // Auto-detect API base URL
