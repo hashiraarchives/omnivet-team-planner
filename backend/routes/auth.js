@@ -6,11 +6,11 @@ const router = express.Router();
 const MASTER_PASSWORD = 'OmniVet0995';
 const JWT_SECRET = process.env.JWT_SECRET || 'omnivet-secret-key-2024';
 
-// Verify master password
+// Verify master password (case-insensitive)
 router.post('/verify-master', (req, res) => {
   const { password } = req.body;
 
-  if (password === MASTER_PASSWORD) {
+  if (password && password.toLowerCase() === MASTER_PASSWORD.toLowerCase()) {
     const token = jwt.sign({ type: 'master' }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ success: true, token });
   } else {

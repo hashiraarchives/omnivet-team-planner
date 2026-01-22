@@ -21,7 +21,8 @@ app.use(cors({
     'http://localhost:8080',
     'http://localhost:3000',
     'http://127.0.0.1:8080',
-    'https://cheerful-perception-production.up.railway.app'
+    'https://cheerful-perception-production.up.railway.app',
+    'https://omnivet.up.railway.app'
   ],
   credentials: true
 }));

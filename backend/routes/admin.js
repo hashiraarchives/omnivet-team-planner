@@ -5,11 +5,11 @@ const router = express.Router();
 const ADMIN_PASSWORD = 'OmniVet0995!';
 const JWT_SECRET = process.env.JWT_SECRET || 'omnivet-secret-key-2024';
 
-// Verify admin password
+// Verify admin password (case-insensitive)
 router.post('/verify', (req, res) => {
   const { password } = req.body;
 
-  if (password === ADMIN_PASSWORD) {
+  if (password && password.toLowerCase() === ADMIN_PASSWORD.toLowerCase()) {
     const token = jwt.sign({ type: 'admin' }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ success: true, token });
   } else {
