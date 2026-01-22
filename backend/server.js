@@ -56,6 +56,7 @@ async function initDatabase() {
         name VARCHAR(255) NOT NULL,
         phone VARCHAR(50) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
+        plain_password VARCHAR(255),
         avatar_data JSON DEFAULT '{}',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
@@ -71,6 +72,17 @@ async function initDatabase() {
         description TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+    `);
+
+    // Migration: Add plain_password column if it doesn't exist
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                       WHERE table_name='users' AND column_name='plain_password') THEN
+          ALTER TABLE users ADD COLUMN plain_password VARCHAR(255);
+        END IF;
+      END $$;
     `);
 
     console.log('Database tables initialized successfully');

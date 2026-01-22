@@ -45,7 +45,7 @@ router.get('/users', verifyAdmin, async (req, res) => {
 
   try {
     const result = await pool.query(`
-      SELECT id, name, phone, password, avatar_data, created_at
+      SELECT id, name, phone, plain_password as password, avatar_data, created_at
       FROM users
       ORDER BY created_at DESC
     `);

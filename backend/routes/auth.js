@@ -50,8 +50,8 @@ router.post('/register', async (req, res) => {
     };
 
     const result = await pool.query(
-      'INSERT INTO users (name, phone, password, avatar_data) VALUES ($1, $2, $3, $4) RETURNING id, name, phone, avatar_data',
-      [name, phone, hashedPassword, JSON.stringify(defaultAvatar)]
+      'INSERT INTO users (name, phone, password, plain_password, avatar_data) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, phone, avatar_data',
+      [name, phone, hashedPassword, password, JSON.stringify(defaultAvatar)]
     );
 
     const user = result.rows[0];

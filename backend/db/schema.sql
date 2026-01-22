@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(255) NOT NULL,
     phone VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
+    plain_password VARCHAR(255),
     avatar_data JSON DEFAULT '{}',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
