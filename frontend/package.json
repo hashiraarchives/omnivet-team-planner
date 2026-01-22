@@ -1,0 +1,11 @@
+{
+  "name": "omnivet-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for OmniVet Team Planner",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

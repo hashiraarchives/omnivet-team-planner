@@ -1,7 +1,6 @@
 // API Configuration and Methods
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:3000/api'
-  : '/api';
+// API_BASE is set by config.js - make sure it's loaded first
+const API_BASE = typeof getApiBase === 'function' ? getApiBase() : '/api';
 
 const API = {
   // Helper for making requests
